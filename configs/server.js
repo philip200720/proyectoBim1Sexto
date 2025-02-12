@@ -5,7 +5,8 @@ import cors from "cors"
 import helmet from "helmet"
 import morgan from "morgan"
 import { dbConnection } from "./mongo.js"
-import apiLimiter from "../src/middlewares/rate-limit-validator.js"
+import { apiLimiter } from "../src/middlewares/rate-limit-validator.js"
+import authRoutes from "../src/auth/auth.routes.js"
 
 const middlewares = (app) => {
     app.use(express.urlencoded({extended: false}))
@@ -25,13 +26,13 @@ const middlewares = (app) => {
                 styleSrc: ["'self'", "'unsafe-inline'"],
             },
         },
-    }));
+    }))
     app.use(morgan("dev"))
     app.use(apiLimiter)
 }
 
 const routes = (app) =>{
-    
+    app.use("/webStore/v1/auth", authRoutes)
 }
 
 const conectarDB = async () =>{

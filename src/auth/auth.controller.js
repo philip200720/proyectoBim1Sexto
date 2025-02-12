@@ -1,6 +1,6 @@
 import { hash, verify } from "argon2"
-import { generateJWT } from "../helpers/generate-jwt"
-import User from "../user/user.model"
+import { generateJWT } from "../helpers/generate-jwt.js"
+import User from "../user/user.model.js"
 
 export const login = async (req, res) => {
     const { email, username, password } = req.body
@@ -47,7 +47,6 @@ export const register = async (req, res) => {
         const data = req.body;
         const encryptedPassword = await hash(data.password)
         data.password = encryptedPassword
-        data.profilePicture = profilePicture
 
         const user = await User.create(data);
 
