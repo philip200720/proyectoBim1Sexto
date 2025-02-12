@@ -8,7 +8,7 @@ export const validateJWT = async (req, res, next) =>{
         if(!token){
             return res.status(401).json({
                 success: false,
-                message: "A token was not provided in the request"
+                message: "Token was not provided in the request"
             })
         }
 

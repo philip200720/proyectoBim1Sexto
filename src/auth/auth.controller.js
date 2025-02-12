@@ -48,8 +48,7 @@ export const register = async (req, res) => {
         const encryptedPassword = await hash(data.password)
         data.password = encryptedPassword
 
-        const user = await User.create(data);
-
+        const user = await User.create(data)
         return res.status(201).json({
             message: "User has been created",
             name: user.name,

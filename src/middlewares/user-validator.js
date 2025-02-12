@@ -2,7 +2,8 @@ import { body } from "express-validator"
 import { emailExists, usernameExists } from "../helpers/db-validators.js"
 import { validateFields } from "./validate-fields.js"
 import { handleErrors } from "./handleErrors.js"
-
+import { validateJWT } from "./validate-jwt.js"
+import { hasRoles } from "./validate-roles.js";
 
 export const registerValidator = [
     body("name").notEmpty().withMessage("Name is required"),
@@ -29,6 +30,21 @@ export const loginValidator = [
     body("email").optional().isEmail().withMessage("Not a valid email"),
     body("username").optional().isString().withMessage("Username is in the wrong format"),
     body("password").isLength({min: 4}).withMessage("Password must contain at least 8 characters"),
+    validateFields,
+    handleErrors
+]
+
+export const listValidator = [
+    validateJWT,
+    hasRoles("ADMIN_ROLE"),
+    validateFields,
+    handleErrors
+]
+
+export const updateUserValidator = [
+    validateJWT,
+    hasRoles("ADMIN_ROLE","CLIENT_ROLE"),
+    body("uid").optional().isMongoId.withMessage("Not a valid MongoDB ID"),
     validateFields,
     handleErrors
 ]
