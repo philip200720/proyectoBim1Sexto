@@ -131,15 +131,15 @@ export const updateProduct = async (req, res) => {
             success: true,
             message: "Product updated successfully",
             updatedProduct
-        });
+        })
     } catch (err) {
         return res.status(500).json({
             success: false,
             message: "Error updating product",
             error: err.message
-        });
+        })
     }
-};
+}
 
 export const deleteProduct = async (req, res) => {
     try {
@@ -148,12 +148,33 @@ export const deleteProduct = async (req, res) => {
         return res.status(200).json({
             success:true,
             message: "Product deleted successfully"
-        });
+        })
     } catch (err) {
         return res.status(500).json({
             success: false,
             message: "Error deleting product",
             error: err.message
+        })
+    }
+}
+
+export const getProductByName = async (req, res) => {
+    try {
+        const { name } = req.params;
+        const product = await Product.findOne( { name: { $regex: new RegExp(name, "i") } } );
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            product
         });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: "Error retrieving product by name", error: err.message });
     }
 };

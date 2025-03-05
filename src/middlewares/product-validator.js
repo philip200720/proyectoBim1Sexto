@@ -29,7 +29,7 @@ export const findProductByIdValidator = [
 
 export const categoryIdValidator = [
     validateJWT,
-    hasRoles("ADMIN_ROLE"),
+    hasRoles("ADMIN_ROLE", "CLIENT_ROLE"),
     param("categoryId")
         .isMongoId().withMessage("Not a valid MongoDB ID")
         .custom(categoryExists),
@@ -38,16 +38,36 @@ export const categoryIdValidator = [
 ];
 
 export const updateProductValidator = [
+    validateJWT,
+    hasRoles("ADMIN_ROLE"),
     param("id").isMongoId().withMessage("Not a valid MongoDB ID"),
     body("name").optional().isString().withMessage("Name must be a string"),
     body("description").optional().isString().withMessage("Description must be a string"),
     body("price").optional().isFloat({ min: 0 }).withMessage("Price must be a positive number"),
     body("stock").optional().isInt({ min: 0 }).withMessage("Stock must be a positive integer"),
     body("productPicture").optional().isString().withMessage("Product picture must be a string"),
-    validateFields
+    validateFields,
+    handleErrors
 ];
 
-export const deleteProductValidator = [
-    param("id").isMongoId().withMessage("Invalid product ID"),
+export const getByNameValidator = [
+    validateJWT,
+    hasRoles("ADMIN_ROLE", "CLIENT_ROLE"),
+    body("name").notEmpty().withMessage("Product name is required"),
     validateFields
+]
+
+export const deleteProductValidator = [
+    validateJWT,
+    hasRoles("ADMIN_ROLE"),
+    param("id").isMongoId().withMessage("Invalid product ID"),
+    validateFields,
+    handleErrors
+];
+
+export const requireAuth = [
+    validateJWT,
+    hasRoles("ADMIN_ROLE"),
+    validateFields,
+    handleErrors
 ];
