@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { deleteUser, getUsers, updateUser } from "./user.controller.js";
-import { deleteUserValidator, listValidator, updateUserValidator } from "../middlewares/user-validator.js"
+import { createUser, deleteUser, getUsers, updateUser } from "./user.controller.js";
+import { createUserValidator, deleteUserValidator, listValidator, updateUserValidator } from "../middlewares/user-validator.js"
 
 
 const router = Router()
 
-router.post("/createUser",)
+router.post("/createUser", createUserValidator, createUser)
 
 router.get("/", listValidator, getUsers)
 
