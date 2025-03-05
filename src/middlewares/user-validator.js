@@ -48,6 +48,49 @@ const updateUserRoleValidation = async (req, res, next) => {
     }
 }
 
+const deleteUserRoleValidation = async (req, res, next) => {
+    try {
+        const { usuario } = req
+        const role = usuario.role
+        const { uid } = req.body
+
+        if (role === "ADMIN_ROLE" || data.uid) {
+            const user = await User.findById(data.uid)
+            if (user.role === "ADMIN_ROLE") {
+                return res.status(401).json({
+                    success: false,
+                    message: "Unable to edit other admins"
+                })
+            }
+            return next()
+        } else if (role === "CLIENT_ROLE") {
+            if (data.uid) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Only admins are authorized to edit other users"
+                })
+            } else if (data.role) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Only admins are authorized to edit roles"
+                })
+            } else if (data.status) {
+                return res.status(405).json({
+                    success: false,
+                    message: "Unable to switch status in update method"
+                })
+            }
+            return next()
+        }
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Error updating users",
+            error: err.message
+        })
+    }
+}
+
 export const registerValidator = [
     body("name").notEmpty().withMessage("Name is required"),
     body("surname").notEmpty().withMessage("Surname is required"),
