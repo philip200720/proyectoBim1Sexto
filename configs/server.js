@@ -8,6 +8,11 @@ import { dbConnection } from "./mongo.js"
 import { apiLimiter } from "../src/middlewares/rate-limit-validator.js"
 import { createDefaultAdmin, createDefaultCategory } from "../src/helpers/db-validators.js"
 import productRoutes from "../src/product/product.routes.js"
+import userRoutes from "../src/user/user.routes.js"
+import categoryRoutes from "../src/category/category.routes.js"
+import invoiceRoutes from "../src/invoice/invoice.routes.js"
+import cartRoutes from "../src/cart/cart.routes.js"
+import authRoutes from "../src/auth/auth.routes.js"
 
 const middlewares = (app) => {
     app.use(express.urlencoded({extended: false}))
@@ -32,14 +37,19 @@ const middlewares = (app) => {
     app.use(apiLimiter)
 }
 
-const routes = (app) =>{
+const routes = (app) => {
     app.use("/webStore/v1/products", productRoutes)
+    app.use("/webStore/v1/users", userRoutes)
+    app.use("/webStore/v1/categories", categoryRoutes)
+    app.use("/webStore/v1/invoices", invoiceRoutes)
+    app.use("/webStore/v1/carts", cartRoutes)
+    app.use("/webStore/v1/auth", authRoutes)
 }
 
-const conectarDB = async () =>{
-    try{
+const conectarDB = async () => {
+    try {
         await dbConnection()
-    }catch(err){
+    } catch (err) {
         console.log(`Database connection failed: ${err}`)
         process.exit(1)
     }
@@ -47,7 +57,7 @@ const conectarDB = async () =>{
 
 export const initServer = async () => {
     const app = express()
-    try{
+    try {
         middlewares(app)
         await conectarDB()
         await createDefaultAdmin()
@@ -55,7 +65,7 @@ export const initServer = async () => {
         routes(app)
         app.listen(process.env.PORT)
         console.log(`Server running on port ${process.env.PORT}`)
-    }catch(err){
+    } catch (err) {
         console.log(`Server init failed: ${err}`)
     }
 }

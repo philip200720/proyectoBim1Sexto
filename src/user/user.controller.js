@@ -44,6 +44,23 @@ export const getUsers = async (req, res) => {
     }
 }
 
+export const getHistory = async (req, res) => {
+    try {
+        const { usuario } = req
+        const user = await User.findById(usuario.id);
+        return res.status(200).json({
+            success: true,
+            history: user.history
+        })
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Error getting history",
+            error: err.message
+        })
+    }
+}
+
 export const updateUser = async (req, res) => {
     try{
         const { usuario } = req

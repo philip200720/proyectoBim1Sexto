@@ -4,6 +4,7 @@ import { validateFields } from "./validate-fields.js";
 import { validateJWT } from "./validate-jwt.js";
 import { hasRoles } from "./validate-roles.js";
 import { productExists } from "../helpers/db-validators.js";
+import { body } from "express-validator";
 
 
 export const checkoutValidator = [

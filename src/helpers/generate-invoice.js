@@ -49,5 +49,5 @@ export const createInvoicePDF = async (invoice) => {
         } catch (error) {
             reject(error);
         }
-    });
-};
+    })
+}

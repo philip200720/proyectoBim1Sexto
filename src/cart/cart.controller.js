@@ -4,6 +4,34 @@ import Invoice from "../invoice/invoice.model.js";
 import Cart from "../cart/cart.model.js";
 import { validateStock } from "../helpers/db-validators.js";
 
+const addToHistory = async (userId, productId, quantity) => {
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error("User not found");
+        }
+        const existingProduct = user.history.find(item => item.product.toString() === productId);
+
+        if (existingProduct) {
+            existingProduct.quantity += quantity;
+        } else {
+            user.history.push({ product: productId, quantity });
+        }
+
+        await user.save();
+        return {
+            success: true,
+            message: "Product added in history",
+            history: user.history
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: error.message
+        }
+    }
+}
+
 export const addToCart = async (req, res) => {
     try {
         const uid = req.usuario._id;
@@ -50,6 +78,7 @@ export const checkout = async (req, res) => {
         let total = 0;
         await validateStock(cart.items)
 
+        const invoiceItems = []
         for (const item of cart.items) {
             const product = await Product.findById(item.product)
             if (!product) {
@@ -59,20 +88,18 @@ export const checkout = async (req, res) => {
                 });
             }
 
-            const price = product.price
-            total += price * item.quantity
-
+            total += product.price * item.quantity;
 
             product.stock -= item.quantity
             product.sold = (product.sold || 0) + item.quantity
             await product.save()
 
-            const invoiceItems = []
             invoiceItems.push({
                 product: item.product,
                 quantity: item.quantity,
                 price: price
             })
+            addToHistory(uid, product, item.quantity)
         }
         const invoice = new Invoice({
             user: userId,
@@ -83,12 +110,19 @@ export const checkout = async (req, res) => {
         cart.items = [];
         await cart.save();
 
-        return res.status(200).json({
-            success: true,
-            message: "purchase made successfully",
-            invoice
-        })
+        const pdfPath = await generateInvoicePDF(invoice);
 
+        res.setHeader("Content-Disposition", `attachment; filename=factura_${invoice._id}.pdf`);
+        res.setHeader("Content-Type", "application/pdf");
+
+        res.download(pdfPath, `factura_${invoice._id}.pdf`, (err) => {
+            if (err) {
+                console.error("Error sending PDF:", err)
+            }
+            fs.unlink(pdfPath, (unlinkErr) => {
+                if (unlinkErr) console.error("Error deleting temporary file:", unlinkErr);
+            });
+        });
     } catch (err) {
         return res.status(500).json({
             success: false,

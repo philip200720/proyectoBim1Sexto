@@ -30,4 +30,4 @@ const invoiceSchema = Schema({
     versionKey: false
 });
 
-const Invoice = model("Invoice", invoiceSchema);
+export default model("Invoice", invoiceSchema);

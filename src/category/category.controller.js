@@ -54,16 +54,27 @@ export const updateCategory = async (req, res) => {
 export const deleteCategory = async (req, res) => {
     try {
         const { id } = req.params;
-        await Category.findByIdAndUpdate(id, { status: false })
+        let uncategorized = await Category.findOne({ name: "Uncategorized" });
+
+        if (!uncategorized) {
+            uncategorized = new Category({ name: "Uncategorized", status: true });
+            await uncategorized.save();
+        }
+
+        await Product.updateMany({ category: id }, { category: uncategorized._id });
+
+        await Category.findByIdAndUpdate(id, { status: false });
+
         return res.status(200).json({
             success: true,
-            message: "Category deleted successfully"
-        })
+            message: "Category deleted successfully, products moved to Uncategorized"
+        });
+
     } catch (err) {
         return res.status(500).json({
             success: false,
             message: "Error deleting category",
             error: err.message
-        })
+        });
     }
-}
+};
