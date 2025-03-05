@@ -17,7 +17,7 @@ export const createCategory = async (req, res) => {
     }
 }
 
-export const getCategories = async (req, res) => {
+export const  getCategories = async (req, res) => {
     try {
         const categories = await Category.find({ status: true })
         return res.status(200).json({

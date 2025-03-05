@@ -42,13 +42,19 @@ const userSchema = Schema({
         maxLength: 8,
         required: true
     },
-    /*
-    history:{
-        type: Schema.ObjectId,
-        ref: 'Product',
-        required: true
-    }
-    */
+    history:[
+        {
+            product:{
+                type: Schema.Types.ObjectId,
+                ref: "Product"
+            },
+            quantity: {
+                type: Number,
+                required: [true, "Quantity is required"],
+                min: [1, "Quantity must be at least 1"]
+            }
+        }
+    ],
     status:{
         type: Boolean,
         default: true
