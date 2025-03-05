@@ -60,3 +60,10 @@ export const createDefaultCategory = async () => {
         console.error(`Error creating default category:, ${error}`);
     }
 }
+
+export const categoryExists = async (categoryId) => {
+    const category = await Category.findById(categoryId);
+    if (!category) {
+        throw new Error(`Category with ID ${categoryId} does not exist`);
+    }
+};
