@@ -6,7 +6,7 @@ import helmet from "helmet"
 import morgan from "morgan"
 import { dbConnection } from "./mongo.js"
 import { apiLimiter } from "../src/middlewares/rate-limit-validator.js"
-import { createDefaultAdmin } from "../src/helpers/db-validators.js"
+import { createDefaultAdmin, createDefaultCategory } from "../src/helpers/db-validators.js"
 import categoryRoutes from "../src/category/category.routes.js"
 
 const middlewares = (app) => {
@@ -50,7 +50,8 @@ export const initServer = async () => {
     try{
         middlewares(app)
         await conectarDB()
-        await createDefaultAdmin
+        await createDefaultAdmin()
+        await createDefaultCategory()
         routes(app)
         app.listen(process.env.PORT)
         console.log(`Server running on port ${process.env.PORT}`)
