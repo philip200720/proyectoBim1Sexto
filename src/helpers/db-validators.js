@@ -66,4 +66,24 @@ export const categoryExists = async (categoryId) => {
     if (!category) {
         throw new Error(`Category with ID ${categoryId} does not exist`);
     }
+}
+
+export const productExists = async (productId) => {
+    const product = await Product.findById(productId);
+    if (!product) {
+        throw new Error(`Product with ID ${productId} does not exist`);
+    }
+}
+
+export const validateStock = async (items) => {
+    for (const item of items) {
+        const product = await Product.findById(item.product);
+        if (!product) {
+            throw new Error(`Product ID ${item.product} not found`);
+        }
+        if (product.stock < item.quantity) {
+            throw new Error(`Insufficient stock for ${product.name}`);
+        }
+    }
+    return true;
 };

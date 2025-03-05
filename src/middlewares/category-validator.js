@@ -31,3 +31,10 @@ export const deleteCategoryValidator = [
     validateFields,
     handleErrors
 ];
+
+export const requireAuth = [
+    validateJWT,
+    hasRoles("ADMIN_ROLE", "CLIENT_ROLE"),
+    validateFields,
+    handleErrors
+];
