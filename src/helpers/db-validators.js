@@ -1,4 +1,6 @@
 import User from "../user/user.model.js"
+import Category from "../category/category.model.js"
+import { hash } from "argon2"
 
 export const emailExists = async (email = "") => {
     const exists = await User.findOne({ email })
@@ -23,7 +25,7 @@ export const userExists = async (uid = "") => {
 
 export const createDefaultAdmin = async () => {
     try {
-        const adminExists = await User.findOne({ role: "ADMIN_ROLE" });
+        const adminExists = await User.findOne({ role: "ADMIN_ROLE" })
         if (!adminExists) {
             const defaultAdmin = {
                 name: "admin",
@@ -35,11 +37,26 @@ export const createDefaultAdmin = async () => {
                 phone: "12345678",
                 role: "ADMIN_ROLE",
                 status: true,
-            };
+            }
             await User.create(defaultAdmin);
             console.log("Default admin created");
         }
     } catch (error) {
         console.error(`"Error creating default admin:", ${error}`);
     }
-};
+}
+
+export const createDefaultCategory = async () => {
+    try {
+        const defaultCategoryExists = await Category.findOne({ name: "Uncategorized" })
+        if (!defaultCategoryExists) {
+            const defaultCategory = {
+                name: "Uncategorized",
+            }
+            await Category.create(defaultCategory);
+            console.log('Default category "Uncategorized" created');
+        }
+    } catch (error) {
+        console.error(`Error creating default category:, ${error}`);
+    }
+}
